@@ -9,3 +9,6 @@ SiteConfig:
 Page_Controller:
   extensions:
     - NewsletterPageControllerExtension
+
+SubscriptionAdmin:
+  awesome_icon: envelope
