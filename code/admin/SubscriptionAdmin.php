@@ -6,7 +6,7 @@ class SubscriptionAdmin extends ModelAdmin
      * @inheritdoc
      */
     private static $managed_models = [
-        'NewsletterSubscriptions',
+        'NewsletterSubscription',
     ];
 
     /**
