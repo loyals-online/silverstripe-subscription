@@ -1,0 +1,17 @@
+nl:
+  Newsletter:
+    ConfigTitle: 'Nieuwsbrief configuratie'
+    SubscriptionService: 'Abonneerdienst'
+    MailChimp:
+      ConfigTitle: 'MailChimp configuratie'
+      ApiKey: 'API key'
+      List: 'Lijst'
+    Form:
+      Submit: 'Inschrijven'
+    Thanks:
+      ConfigTitle: 'Bedankt pagina'
+      Title: 'Titel'
+      Content: 'Content'
+  NewsletterSubscription:
+    db_Name: 'Naam'
+    db_Email: 'E-mail'

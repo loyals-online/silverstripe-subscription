@@ -1,0 +1,11 @@
+---
+name: 'newsletter'
+---
+
+SiteConfig:
+  extensions:
+    - NewsletterSiteConfigExtension
+
+Page_Controller:
+  extensions:
+    - NewsletterPageControllerExtension

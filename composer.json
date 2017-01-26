@@ -1,0 +1,27 @@
+{
+  "name": "loyals/silverstripe-subscription",
+  "description": "A simple yet configurable contact page",
+  "type": "silverstripe-module",
+  "keywords": [
+    "silverstripe",
+    "newsletter",
+    "subscription",
+    "mailchimp",
+    "module",
+    "cms"
+  ],
+  "license": "BSD-3-Clause",
+  "authors": [
+    {
+      "name": "Martijn Schenk",
+      "email": "martijnschenk@loyals.nl"
+    }
+  ],
+  "require": {
+    "silverstripe/framework": "~3.4",
+  },
+  "extra": {
+    "installer-name": "newsletter"
+  },
+  "target-dir": "newsletter"
+}
