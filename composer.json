@@ -1,5 +1,5 @@
 {
-  "name": "loyals/silverstripe-subscription",
+  "name": "loyals-online/silverstripe-subscription",
   "description": "A simple yet configurable contact page",
   "type": "silverstripe-module",
   "keywords": [
