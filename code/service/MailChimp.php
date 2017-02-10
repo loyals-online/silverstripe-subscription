@@ -66,7 +66,7 @@ class MailChimp
     public function __construct($apiKey)
     {
         $this->apiKey = $apiKey;
-        $dc           = substr($apiKey, -3);
+        $dc           = substr($apiKey, strpos($apiKey, '-') + 1);
 
         $this->endPoint = sprintf('https://%1$s%2$s', $dc, static::$base_url);
 
@@ -74,32 +74,85 @@ class MailChimp
     }
 
     /**
+     * Get the lists for this user
+     *
+     * @param int $offset
+     *
+     * @return mixed
+     */
+    public function getLists($offset = 0)
+    {
+        return $this->get(sprintf('/lists?offset=%1$d', $offset));
+    }
+
+    /**
      * Subscribe an emailaddress
      *
-     * @param        $list
-     * @param        $email
+     * @param string $list
+     * @param string $email
+     * @param array  $data
      * @param string $status
      * @param string $type
      *
      * @return mixed
      */
-    public function subscribe($list, $email, $status = self::MEMBER_STATUS_SUBSCRIBED, $type = self::MEMBER_EMAILTYPE_HTML)
+    public function subscribe($list, $email, array $data = null, $status = self::MEMBER_STATUS_SUBSCRIBED, $type = self::MEMBER_EMAILTYPE_HTML)
     {
-        return $this->post(
-            sprintf('/lists/%1$s/members', $list),
-            [
+        $data = [
                 'email_type'    => $type,
                 'status'        => $status,
                 'email_address' => $email,
-            ]
+                'language'      => i18n::get_lang_from_locale(i18n::get_locale()),
+            ] + ($data ?: []);
+
+        return $this->post(
+            sprintf('/lists/%1$s/members', $list),
+            $data
         );
+    }
+
+    /**
+     * Unsubscribe a subscriber
+     *
+     * @param string $list
+     * @param string $hash
+     *
+     * @return mixed
+     */
+    public function unsubscribe($list, $hash)
+    {
+        return $this->delete(
+            sprintf('/lists/%1$s/members/%2$s', $list, $hash)
+        );
+    }
+
+    /**
+     * Send a get request to the API
+     *
+     * @param string $path
+     *
+     * @return mixed
+     */
+    protected function get($path)
+    {
+        $url = sprintf('%1$s%2$s', $this->endPoint, $path);
+
+        curl_setopt_array(
+            $this->handle, [
+            CURLOPT_URL        => $url,
+            CURLOPT_HTTPHEADER => [
+                'Content-Type: application/json',
+            ],
+        ]);
+
+        return $this->perform();
     }
 
     /**
      * Send a post request to the API
      *
-     * @param       $path
-     * @param array $data
+     * @param string $path
+     * @param array  $data
      *
      * @return mixed
      */
@@ -107,7 +160,7 @@ class MailChimp
     {
         $data = json_encode($data);
 
-        $url  = sprintf('%1$s%2$s', $this->endPoint, $path);
+        $url = sprintf('%1$s%2$s', $this->endPoint, $path);
 
         curl_setopt_array(
             $this->handle,
@@ -121,6 +174,22 @@ class MailChimp
                 ],
             ]
         );
+
+        return $this->perform();
+    }
+
+    protected function delete($path)
+    {
+        $url = sprintf('%1$s%2$s', $this->endPoint, $path);
+
+        curl_setopt_array(
+            $this->handle, [
+            CURLOPT_URL           => $url,
+            CURLOPT_HTTPHEADER    => [
+                'Content-Type: application/json',
+            ],
+            CURLOPT_CUSTOMREQUEST => 'DELETE',
+        ]);
 
         return $this->perform();
     }
@@ -147,6 +216,7 @@ class MailChimp
         if ($response) {
             $response = @json_decode($response);
         }
+
         // @todo error handling
         return $response;
     }

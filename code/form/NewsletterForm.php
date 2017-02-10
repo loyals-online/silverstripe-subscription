@@ -87,7 +87,7 @@ class NewsletterForm extends Form
 
         if ($location == 'Footer') {
             /** @var FormField $field */
-            foreach($fields as $field) {
+            foreach ($fields as $field) {
                 $field->setFieldHolderTemplate('FormField_Half_holder');
             }
         }
@@ -142,18 +142,26 @@ class NewsletterForm extends Form
      */
     public function process($data, $form)
     {
-        $sub = NewsletterSubscription::create();
-        $this->saveInto($sub);
-        $sub->write();
+        // prevent duplicate key errors
+        if (!($sub = NewsletterSubscription::get()
+            ->filter(['Email' => $data['Email']])
+            ->First())
+        ) {
 
-        $siteConfig = SiteConfig::current_site_config();
-
-        switch ($siteConfig->NewsletterSubscriptionService) {
-            case NewsletterSiteConfigExtension::SERVICE_MAILCHIMP:
-                NewsletterMailChimp::process($data);
-                break;
+            $sub = NewsletterSubscription::create();
+            $this->saveInto($sub);
+            $sub->write();
         }
 
+        $siteConfig = SiteConfig::current_site_config();
+        switch ($siteConfig->NewsletterSubscriptionService) {
+            case NewsletterSiteConfigExtension::SERVICE_MAILCHIMP:
+                if ($identifier = NewsletterMailChimp::subscribe($data)) {
+                    $sub->Identifier = $identifier;
+                    $sub->write();
+                }
+                break;
+        }
         Session::set('SubscriptionSaved', true);
 
         return $this->controller->redirectBack();

@@ -22,6 +22,18 @@ class NewsletterSiteConfigExtension extends Extension
      */
     public function updateCMSFields(FieldList $fields)
     {
+        $lists = NewsletterMailChimp::get_lists();
+        $dropdown = $lists
+            ? DropdownField::create(
+                'NewsletterMailChimpList',
+                _t('Newsletter.MailChimp.List', 'List'),
+                $lists,
+                $this->owner->NewsletterMailChimpList
+            )
+            : LabelField::create(
+            'NewsletterMailChimpList',
+            _t('Newsletter.MailChimp.NoApiKey', 'Please enter the API key and save')
+        );
         $fields->addFieldsToTab("Root.Newsletter", [
             HeaderField::create(
                 _t('Newsletter.ConfigTitle', 'Newsletter configuration')
@@ -45,10 +57,7 @@ class NewsletterSiteConfigExtension extends Extension
                 ->displayIf('NewsletterSubscriptionService')
                 ->isEqualTo('MailChimp')
                 ->end(),
-            TextField::create(
-                'NewsletterMailChimpList',
-                _t('Newsletter.MailChimp.List', 'List')
-            )
+            $dropdown
                 ->displayIf('NewsletterSubscriptionService')
                 ->isEqualTo('MailChimp')
                 ->end(),
