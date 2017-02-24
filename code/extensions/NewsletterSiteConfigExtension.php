@@ -14,6 +14,7 @@ class NewsletterSiteConfigExtension extends Extension
         'NewsletterMailChimpApiKey'     => 'Varchar',
         'NewsletterMailChimpList'       => 'Varchar',
         'NewsletterThanksTitle'         => 'Varchar',
+        'NewsletterErrorMessage'        => 'Text',
         'NewsletterThanksContent'       => 'CustomHTMLText',
     ];
 
@@ -22,7 +23,7 @@ class NewsletterSiteConfigExtension extends Extension
      */
     public function updateCMSFields(FieldList $fields)
     {
-        $lists = NewsletterMailChimp::get_lists();
+        $lists    = NewsletterMailChimp::get_lists();
         $dropdown = $lists
             ? DropdownField::create(
                 'NewsletterMailChimpList',
@@ -31,9 +32,9 @@ class NewsletterSiteConfigExtension extends Extension
                 $this->owner->NewsletterMailChimpList
             )
             : LabelField::create(
-            'NewsletterMailChimpList',
-            _t('Newsletter.MailChimp.NoApiKey', 'Please enter the API key and save')
-        );
+                'NewsletterMailChimpList',
+                _t('Newsletter.MailChimp.NoApiKey', 'Please enter the API key and save')
+            );
         $fields->addFieldsToTab("Root.Newsletter", [
             HeaderField::create(
                 _t('Newsletter.ConfigTitle', 'Newsletter configuration')
@@ -68,6 +69,11 @@ class NewsletterSiteConfigExtension extends Extension
                 'NewsletterThanksTitle',
                 _t('Newsletter.Thanks.Title', 'Title')
             ),
+            TextareaField::create(
+                'NewsletterErrorMessage',
+                _t('Newsletter.Error.Message', 'Error Message')
+            )
+                ->setRows(3),
             CustomHtmlEditorField::create(
                 'NewsletterThanksContent',
                 _t('Newsletter.Thanks.Content', 'Content')
