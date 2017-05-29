@@ -178,6 +178,13 @@ class MailChimp
         return $this->perform();
     }
 
+    /**
+     * Send a delete request to the API
+     *
+     * @param $path
+     *
+     * @return mixed
+     */
     protected function delete($path)
     {
         $url = sprintf('%1$s%2$s', $this->endPoint, $path);
