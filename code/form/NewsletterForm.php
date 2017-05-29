@@ -5,10 +5,10 @@ class NewsletterForm extends Form
     /**
      * ProspectForm constructor.
      *
-     * @param \Controller $controller
-     * @param string      $name
+     * @param \Page_Controller $controller
+     * @param string           $name
      */
-    public function __construct(\Controller $controller, $name, $location = null)
+    public function __construct(\Page_Controller $controller, $name, $location = null)
     {
         parent::__construct($controller, $name, FieldList::create(), FieldList::create(), null);
 
@@ -57,7 +57,7 @@ class NewsletterForm extends Form
     /**
      * Retrieve the validator for this form
      *
-     * @return static
+     * @return RequiredFields
      */
     protected function getRequiredFieldList()
     {
@@ -142,6 +142,9 @@ class NewsletterForm extends Form
      */
     public function process($data, $form)
     {
+        $jsend = new JSendResponse();
+        $siteConfig = $this->controller->data()->alternateSiteConfig();
+
         // prevent duplicate key errors
         if (!($sub = NewsletterSubscription::get()
             ->filter(['Email' => $data['Email']])
@@ -150,18 +153,35 @@ class NewsletterForm extends Form
 
             $sub = NewsletterSubscription::create();
             $this->saveInto($sub);
-            $sub->write();
+            if ($sub->write()) {
+                switch ($siteConfig->NewsletterSubscriptionService) {
+                    case NewsletterSiteConfigExtension::SERVICE_MAILCHIMP:
+                        if ($identifier = NewsletterMailChimp::subscribe($data)) {
+                            $sub->Identifier = $identifier;
+                            $sub->write();
+                        } else {
+                            $jsend->setStatus(JSendResponse::STATUS_FAIL);
+                        }
+                        break;
+                }
+            } else {
+                $jsend->setStatus(JSendResponse::STATUS_ERROR);
+                $jsend->setCode(500);
+            }
         }
 
-        $siteConfig = SiteConfig::current_site_config();
-        switch ($siteConfig->NewsletterSubscriptionService) {
-            case NewsletterSiteConfigExtension::SERVICE_MAILCHIMP:
-                if ($identifier = NewsletterMailChimp::subscribe($data)) {
-                    $sub->Identifier = $identifier;
-                    $sub->write();
-                }
-                break;
+        if ($this->controller->getRequest()
+            ->isAjax()
+        ) {
+            $jsend->setData([
+                'response' => $jsend->isSuccess() ? $siteConfig->NewsletterThanksContent : $siteConfig->NewsletterErrorMessage,
+            ]);
+
+            $response = new SS_HTTPResponse($jsend->getJson());
+
+            return $response;
         }
+
         Session::set('SubscriptionSaved', true);
 
         return $this->controller->redirectBack();

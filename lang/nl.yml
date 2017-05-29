@@ -12,6 +12,8 @@ nl:
       ConfigTitle: 'Bedankt pagina'
       Title: 'Titel'
       Content: 'Content'
+    Error:
+      Message: 'Error Tekst'
   NewsletterSubscription:
     db_Name: 'Naam'
     db_Email: 'E-mail'

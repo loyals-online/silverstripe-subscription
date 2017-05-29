@@ -1,6 +1,6 @@
 {
   "name": "loyals-online/silverstripe-subscription",
-  "description": "A simple yet configurable contact page",
+  "description": "Adds simple yet configurable newsletter subscription functionality",
   "type": "silverstripe-module",
   "keywords": [
     "silverstripe",
@@ -15,10 +15,16 @@
     {
       "name": "Martijn Schenk",
       "email": "martijnschenk@loyals.nl"
+    },
+    {
+      "name": "Jan-Pieter van der Poel",
+      "email": "jp@loyals.nl"
     }
   ],
   "require": {
-    "silverstripe/framework": "~3.4"
+    "silverstripe/framework": "~3.4",
+    "silverstripe/display-logic": "dev-master",
+    "mediaweb/silverstripe-jsend": "1.*"
   },
   "extra": {
     "installer-name": "newsletter"
