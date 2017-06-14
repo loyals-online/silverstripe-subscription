@@ -7,6 +7,7 @@ class NewsletterSiteConfigExtension extends Extension
      */
     const SERVICE_MAILCHIMP   = 'MailChimp';
     const SERVICE_GETRESPONSE = 'GetResponse';
+
     /**
      * @inheritdoc
      */
@@ -50,7 +51,7 @@ class NewsletterSiteConfigExtension extends Extension
                 ->displayIf('NewsletterSubscriptionService')
                 ->isEqualTo(static::SERVICE_MAILCHIMP)
                 ->end(),
-            $this->getListDropdown(static::SERVICE_MAILCHIMP)
+            $this->getListField(static::SERVICE_MAILCHIMP)
                 ->displayIf('NewsletterSubscriptionService')
                 ->isEqualTo(static::SERVICE_MAILCHIMP)
                 ->end(),
@@ -68,7 +69,7 @@ class NewsletterSiteConfigExtension extends Extension
                 ->displayIf('NewsletterSubscriptionService')
                 ->isEqualTo(static::SERVICE_GETRESPONSE)
                 ->end(),
-            $this->getListDropdown(static::SERVICE_GETRESPONSE)
+            $this->getListField(static::SERVICE_GETRESPONSE)
                 ->displayIf('NewsletterSubscriptionService')
                 ->isEqualTo(static::SERVICE_GETRESPONSE)
                 ->end(),
@@ -95,7 +96,14 @@ class NewsletterSiteConfigExtension extends Extension
         return $fields;
     }
 
-    protected function getListDropdown($service = self::SERVICE_MAILCHIMP)
+    /**
+     * Retrieve a field for the lists/campaigns
+     *
+     * @param string $service
+     *
+     * @return DropdownField|DisplayLogicWrapper
+     */
+    protected function getListField($service = self::SERVICE_MAILCHIMP)
     {
         switch ($service) {
             case static::SERVICE_MAILCHIMP:
