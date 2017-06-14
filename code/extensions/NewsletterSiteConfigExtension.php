@@ -112,6 +112,9 @@ class NewsletterSiteConfigExtension extends Extension
             case static::SERVICE_GETRESPONSE:
                 $lists = NewsletterGetResponse::get_lists();
                 break;
+            default:
+                $lists = null;
+                break;
         }
 
         return $lists
