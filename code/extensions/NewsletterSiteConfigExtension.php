@@ -5,14 +5,17 @@ class NewsletterSiteConfigExtension extends Extension
     /**
      * Const service
      */
-    const SERVICE_MAILCHIMP = 'MailChimp';
+    const SERVICE_MAILCHIMP   = 'MailChimp';
+    const SERVICE_GETRESPONSE = 'GetResponse';
     /**
      * @inheritdoc
      */
     private static $db = [
-        'NewsletterSubscriptionService' => 'Enum("MailChimp", "MailChimp")',
+        'NewsletterSubscriptionService' => 'Enum("MailChimp, GetResponse", "MailChimp")',
         'NewsletterMailChimpApiKey'     => 'Varchar',
         'NewsletterMailChimpList'       => 'Varchar',
+        'NewsletterGetResponseApiKey'   => 'Varchar',
+        'NewLetterGetResponseList'      => 'Varchar',
         'NewsletterThanksTitle'         => 'Varchar',
         'NewsletterErrorMessage'        => 'Text',
         'NewsletterThanksContent'       => 'CustomHTMLText',
@@ -23,18 +26,6 @@ class NewsletterSiteConfigExtension extends Extension
      */
     public function updateCMSFields(FieldList $fields)
     {
-        $lists    = NewsletterMailChimp::get_lists();
-        $dropdown = $lists
-            ? DropdownField::create(
-                'NewsletterMailChimpList',
-                _t('Newsletter.MailChimp.List', 'List'),
-                $lists,
-                $this->owner->NewsletterMailChimpList
-            )
-            : LabelField::create(
-                'NewsletterMailChimpList',
-                _t('Newsletter.MailChimp.NoApiKey', 'Please enter the API key and save')
-            );
         $fields->addFieldsToTab("Root.Newsletter", [
             HeaderField::create(
                 _t('Newsletter.ConfigTitle', 'Newsletter configuration')
@@ -45,23 +36,43 @@ class NewsletterSiteConfigExtension extends Extension
                 $this->owner->dbObject('NewsletterSubscriptionService')
                     ->enumValues()
             ),
-            HeaderField::create(
+            // MailChimp
+            DisplayLogicWrapper::create(HeaderField::create(
                 _t('Newsletter.MailChimp.ConfigTitle', 'MailChimp Configuration')
-            )
+            ))
                 ->displayIf('NewsletterSubscriptionService')
-                ->isEqualTo('MailChimp')
+                ->isEqualTo(static::SERVICE_MAILCHIMP)
                 ->end(),
             TextField::create(
                 'NewsletterMailChimpApiKey',
                 _t('Newsletter.MailChimp.ApiKey', 'API Key')
             )
                 ->displayIf('NewsletterSubscriptionService')
-                ->isEqualTo('MailChimp')
+                ->isEqualTo(static::SERVICE_MAILCHIMP)
                 ->end(),
-            $dropdown
+            $this->getListDropdown(static::SERVICE_MAILCHIMP)
                 ->displayIf('NewsletterSubscriptionService')
-                ->isEqualTo('MailChimp')
+                ->isEqualTo(static::SERVICE_MAILCHIMP)
                 ->end(),
+            // GetResponse
+            DisplayLogicWrapper::create(HeaderField::create(
+                _t('Newsletter.GetResponse.ConfigTitle', 'GetResponse Configuration')
+            ))
+                ->displayIf('NewsletterSubscriptionService')
+                ->isEqualTo(static::SERVICE_GETRESPONSE)
+                ->end(),
+            TextField::create(
+                'NewsletterGetResponseApiKey',
+                _t('Newsletter.GetResponse.ApiKey', 'API Key')
+            )
+                ->displayIf('NewsletterSubscriptionService')
+                ->isEqualTo(static::SERVICE_GETRESPONSE)
+                ->end(),
+            $this->getListDropdown(static::SERVICE_GETRESPONSE)
+                ->displayIf('NewsletterSubscriptionService')
+                ->isEqualTo(static::SERVICE_GETRESPONSE)
+                ->end(),
+
             HeaderField::create(
                 _t('Newsletter.Thanks.ConfigTitle', 'Thanks page')
             ),
@@ -84,4 +95,27 @@ class NewsletterSiteConfigExtension extends Extension
         return $fields;
     }
 
+    protected function getListDropdown($service = self::SERVICE_MAILCHIMP)
+    {
+        switch ($service) {
+            case static::SERVICE_MAILCHIMP:
+                $lists = NewsletterMailChimp::get_lists();
+                break;
+            case static::SERVICE_GETRESPONSE:
+                $lists = NewsletterGetResponse::get_lists();
+                break;
+        }
+
+        return $lists
+            ? DropdownField::create(
+                sprintf('Newsletter%1$sList', $service),
+                _t(sprintf('Newsletter.%1$s.List', $service), 'List'),
+                $lists,
+                $this->owner->{sprintf('Newsletter%1$sList', $service)}
+            )
+            : DisplayLogicWrapper::create(LabelField::create(
+                sprintf('Newsletter%1$sList', $service),
+                _t(sprintf('Newsletter.%1$s.NoApiKey', $service), 'Please enter the API key and save')
+            ));
+    }
 }

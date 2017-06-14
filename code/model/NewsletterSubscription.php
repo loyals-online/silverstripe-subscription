@@ -51,6 +51,9 @@ class NewsletterSubscription extends DataObject
             case NewsletterSiteConfigExtension::SERVICE_MAILCHIMP:
                 NewsletterMailChimp::unsubscribe($this->Identifier);
                 break;
+            case NewsletterSiteConfigExtension::SERVICE_GETRESPONSE:
+                NewsletterGetResponse::unsubscribe($this->Identifier);
+                break;
         }
     }
 }
