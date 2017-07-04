@@ -16,7 +16,7 @@ class NewsletterSiteConfigExtension extends Extension
         'NewsletterMailChimpApiKey'     => 'Varchar',
         'NewsletterMailChimpList'       => 'Varchar',
         'NewsletterGetResponseApiKey'   => 'Varchar',
-        'NewLetterGetResponseList'      => 'Varchar',
+        'NewsletterGetResponseList'     => 'Varchar',
         'NewsletterThanksTitle'         => 'Varchar',
         'NewsletterErrorMessage'        => 'Text',
         'NewsletterThanksContent'       => 'CustomHTMLText',

@@ -6,6 +6,12 @@ nl:
       ConfigTitle: 'MailChimp configuratie'
       ApiKey: 'API key'
       List: 'Lijst'
+      NoApiKey: 'Voer de API key in, en sla op'
+    GetResponse:
+      ConfigTitle: 'GetResponse configuratie'
+      ApiKey: 'API key'
+      List: 'Lijst'
+      NoApiKey: 'Voer de API key in, en sla op'
     Form:
       Submit: 'Inschrijven'
     Thanks:

@@ -29,14 +29,15 @@ class NewsletterGetResponse extends NewsletterService
 
         $response = static::get_client()
             ->getCampaigns();
-//        if (isset($response->lists) && count($response->lists)) {
-//            $lists = [];
-//            foreach ($response->lists as $list) {
-//                $lists[$list->id] = $list->name;
-//            }
-//
-//            return $lists;
-//        }
+
+        if (count($response)) {
+            $lists = [];
+            foreach ($response as $list) {
+                $lists[$list->campaignId] = $list->name;
+            }
+
+            return $lists;
+        }
 
         return false;
     }
@@ -63,11 +64,23 @@ class NewsletterGetResponse extends NewsletterService
                 $config->NewsletterGetResponseList
             );
 
-        if (isset($response->id)) {
-            return $response->id;
+        return (bool) $response;
+    }
+
+    public static function search($email)
+    {
+        if (!static::canPerform()) {
+            return false;
+        }
+
+        $result = static::get_client()->search($email);
+
+        if (count($result)) {
+            return $result[0]->contactId;
         }
 
         return false;
+
     }
 
     /**

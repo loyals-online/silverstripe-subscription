@@ -90,7 +90,26 @@ class GetResponse
             $data['customFieldValues'] = $newValues;
         }
 
-        return $this->post('/contacts', json_encode($data));
+        return $this->post('/contacts', $data);
+    }
+
+    /**
+     * Search for an emailadress
+     *
+     * @param $email
+     *
+     * @return mixed
+     */
+    public function search($email)
+    {
+        $data = [
+            'query' => [
+                'email' => $email,
+            ],
+            'fields' => 'contactId',
+        ];
+
+        return $this->get('/contacts', $data);
     }
 
     /**
@@ -109,12 +128,16 @@ class GetResponse
      * Send a get request to the API
      *
      * @param string $path
+     * @param array $data
      *
      * @return mixed
      */
-    protected function get($path)
+    protected function get($path, array $data = null)
     {
         $url = sprintf('%1$s%2$s', $this->base_url, $path);
+        if (is_array($data)) {
+            $url .= sprintf('?%1$s', http_build_query($data));
+        }
 
         curl_setopt_array(
             $this->handle, [

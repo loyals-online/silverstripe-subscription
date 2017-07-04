@@ -143,7 +143,8 @@ class NewsletterForm extends Form
     public function process($data, $form)
     {
         $jsend = new JSendResponse();
-        $siteConfig = $this->controller->data()->alternateSiteConfig();
+
+        $siteConfig = (method_exists($this->controller->data(), 'alternateSiteConfig')) ? $this->controller->data()->alternateSiteConfig() : SiteConfig::current_site_config();
 
         // prevent duplicate key errors
         if (!($sub = NewsletterSubscription::get()
@@ -157,6 +158,14 @@ class NewsletterForm extends Form
                 switch ($siteConfig->NewsletterSubscriptionService) {
                     case NewsletterSiteConfigExtension::SERVICE_MAILCHIMP:
                         if ($identifier = NewsletterMailChimp::subscribe($data)) {
+                            $sub->Identifier = $identifier;
+                            $sub->write();
+                        } else {
+                            $jsend->setStatus(JSendResponse::STATUS_FAIL);
+                        }
+                        break;
+                    case NewsletterSiteConfigExtension::SERVICE_GETRESPONSE:
+                        if (NewsletterGetResponse::subscribe($data) && ($identifier = NewsletterGetResponse::search($data['Email']))) {
                             $sub->Identifier = $identifier;
                             $sub->write();
                         } else {
