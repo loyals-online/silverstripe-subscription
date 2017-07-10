@@ -193,6 +193,6 @@ class NewsletterForm extends Form
 
         Session::set('SubscriptionSaved', true);
 
-        return $this->controller->redirectBack();
+        return $this->controller->redirect($this->controller->Link('thanks'));
     }
 }

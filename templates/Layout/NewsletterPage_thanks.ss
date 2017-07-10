@@ -3,10 +3,8 @@
 
         <% include Submenu %>
         <div class="medium-8 <% if not $Menu(2) %>small-centered<% end_if %> columns">
-            <h1>$Title</h1>
-            $Content
-
-            $NewsletterForm
+            <h1>$SiteConfig.NewsletterThanksTitle</h1>
+            $SiteConfig.NewsletterThanksContent
         </div>
 
     </div>
