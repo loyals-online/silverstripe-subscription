@@ -22,7 +22,11 @@ class NewsletterPageControllerExtension extends Extension
      */
     public function NewsletterForm($location = null)
     {
-        return NewsletterForm::create($this->owner, 'NewsletterForm', $location);
+        if (SiteConfig::current_site_config()->NewsletterSubscriptionService && SiteConfig::current_site_config()->NewsletterSubscriptionService <> NewsletterSiteConfigExtension::SERVICE_NONE) {
+            return NewsletterForm::create($this->owner, 'NewsletterForm', $location);
+        }
+
+        return null;
     }
 
     /**

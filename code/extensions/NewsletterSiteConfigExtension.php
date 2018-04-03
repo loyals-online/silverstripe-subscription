@@ -5,6 +5,7 @@ class NewsletterSiteConfigExtension extends Extension
     /**
      * Const service
      */
+    const SERVICE_NONE        = 'None';
     const SERVICE_MAILCHIMP   = 'MailChimp';
     const SERVICE_GETRESPONSE = 'GetResponse';
 
@@ -12,7 +13,7 @@ class NewsletterSiteConfigExtension extends Extension
      * @inheritdoc
      */
     private static $db = [
-        'NewsletterSubscriptionService' => 'Enum("MailChimp, GetResponse", "MailChimp")',
+        'NewsletterSubscriptionService' => 'Enum("None, MailChimp, GetResponse", "None")',
         'NewsletterMailChimpApiKey'     => 'Varchar',
         'NewsletterMailChimpList'       => 'Varchar',
         'NewsletterGetResponseApiKey'   => 'Varchar',
