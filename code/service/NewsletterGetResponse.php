@@ -33,7 +33,9 @@ class NewsletterGetResponse extends NewsletterService
         if (count($response)) {
             $lists = [];
             foreach ($response as $list) {
-                $lists[$list->campaignId] = $list->name;
+                if (isset($list->campaignId, $list->name)) {
+                    $lists[$list->campaignId] = $list->name;
+                }
             }
 
             return $lists;
